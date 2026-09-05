@@ -26,7 +26,7 @@
   height: 100%;
   object-fit: cover;
   object-position: center top;
-  transform: scale(1.15) translateY(20%);
+  transform: scale(1.15) translateY(-10%);
 }
 
 /* Dark overlay for text readability */
@@ -61,7 +61,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding-top: clamp(2rem, 6vh, 4rem);
+  padding-top: clamp(4rem, 12vh, 8rem);
   animation: fadeSlideDown 1.2s ease-out both;
 }
 
