@@ -1,9 +1,11 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
 import './App.css'
 
-import bgImage from '../assets/bg.jpg'
+import bgImage from '../assets/bg.png'
+import portalImage from '../assets/portal-new.png'
 import sinhalaTitle from '../assets/kodu-yathra-sinhala.webp'
 import logo from '../assets/kodu-yathra-logo-clean.webp'
+import facOfComputingLogo from '../assets/faculty-of-computing.webp'
 
 // Event target date: September 10, 2026 at 6:00 PM IST
 const EVENT_DATE = new Date('2026-09-10T18:00:00+05:30')
@@ -76,10 +78,14 @@ function App() {
     <>
       {/* Hero section — unchanged layout */}
       <div className="invitation" id="invitation-page">
+        <div className="invitation__portal">
+          <img src={portalImage} alt="Portal" />
+        </div>
         <div className="invitation__bg">
           <img src={bgImage} alt="Koduyaathra background" />
         </div>
         <div className="invitation__overlay" />
+        <div className="invitation__overlay-bottom" />
         <div className="invitation__vignette" />
 
         <div className="invitation__particles">
@@ -194,6 +200,11 @@ function App() {
           </section>
           <div className="info-card__divider" />
         </div>
+
+        {/* Faculty of Computing footer */}
+        <footer className="details__footer reveal" data-delay="5">
+          <img src={facOfComputingLogo} alt="Faculty of Computing" className="details__footer-logo" />
+        </footer>
       </div>
     </>
   )
