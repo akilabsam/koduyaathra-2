@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Design and original image assets
+*.psd
+*.png
+*.jpg
+*.jpeg
+
+# Conversion scripts
+convert.js

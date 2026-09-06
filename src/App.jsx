@@ -1,8 +1,8 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
 import './App.css'
 
-import bgImage from '../assets/bg.png'
-import portalImage from '../assets/portal-new.png'
+import bgImage from '../assets/bg.webp'
+import portalImage from '../assets/portal-new.webp'
 import sinhalaTitle from '../assets/kodu-yathra-sinhala.webp'
 import logo from '../assets/kodu-yathra-logo-clean.webp'
 import facOfComputingLogo from '../assets/faculty-of-computing.webp'
