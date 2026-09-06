@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import './App.css'
 
 import bgImage from '../assets/bg.jpg'
@@ -70,10 +70,7 @@ function App() {
     return () => clearInterval(id)
   }, [])
 
-  // Smooth-scroll to details on arrow click
-  const scrollToDetails = useCallback(() => {
-    detailsRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [detailsRef])
+
 
   return (
     <>
@@ -120,22 +117,19 @@ function App() {
             src={logo}
             alt="Kodu Yathra Logo"
           />
-          <span className="invitation__logo-label">Kodu Yathra</span>
-          <div className="invitation__divider" />
-          <p className="invitation__tagline">Every Second Counts</p>
+         
         </footer>
 
-        {/* Scroll-down indicator */}
-        <div className="invitation__scroll-hint" onClick={scrollToDetails}>
-          <span>Scroll</span>
-          <div className="invitation__scroll-arrow" />
-        </div>
+
       </div>
 
       {/* Details sections — revealed on scroll */}
       <div className="details" ref={detailsRef} id="details-section">
 
 
+
+        {/* Tagline above countdown */}
+        <p className="details__countdown-tagline reveal" data-delay="0">Every Second Counts</p>
 
         {/* Countdown timer */}
         <div className="countdown reveal" data-delay="1">
@@ -160,40 +154,46 @@ function App() {
           </div>
         </div>
 
-        <div className="info-divider reveal" data-delay="2" />
+        {/* Date card */}
+        <div className="info-card reveal" data-delay="2">
+          <div className="info-card__divider" />
+          <section className="info-section" id="date-section">
+            <span className="info-section__label">Date</span>
+            <p className="info-section__primary">
+              <span className="info-section__primary--gold">10<sup>th</sup></span>{' '}
+              <span className="info-section__primary--white">of September</span>
+            </p>
+            <p className="info-section__secondary">Thursday</p>
+          </section>
+          <div className="info-card__divider" />
+        </div>
 
-        {/* Date */}
-        <section className="info-section reveal" data-delay="2" id="date-section">
-          <span className="info-section__label">Date</span>
-          <p className="info-section__primary">
-            <span className="info-section__primary--gold">10<sup>th</sup></span>{' '}
-            <span className="info-section__primary--white">of September</span>
-          </p>
-          <p className="info-section__secondary">Thursday</p>
-        </section>
+        {/* Time card */}
+        <div className="info-card reveal" data-delay="3">
+          <div className="info-card__divider" />
+          <section className="info-section" id="time-section">
+            <span className="info-section__label">Time</span>
+            <p className="info-section__primary">
+              <span className="info-section__primary--gold">6 PM</span>{' '}
+              <span className="info-section__primary--white">Onwards</span>
+            </p>
+            <p className="info-section__secondary">Doors Open At 5:30</p>
+          </section>
+          <div className="info-card__divider" />
+        </div>
 
-        <div className="info-divider reveal" data-delay="3" />
-
-        {/* Time */}
-        <section className="info-section reveal" data-delay="3" id="time-section">
-          <span className="info-section__label">Time</span>
-          <p className="info-section__primary">
-            <span className="info-section__primary--gold">6 PM</span>{' '}
-            <span className="info-section__primary--white">Onwards</span>
-          </p>
-          <p className="info-section__secondary">Doors Open At 5:30</p>
-        </section>
-
-        <div className="info-divider reveal" data-delay="4" />
-
-        {/* Venue */}
-        <section className="info-section reveal" data-delay="4" id="venue-section">
-          <span className="info-section__label">Venue</span>
-          <p className="info-section__primary info-section__primary--gold">
-            Dayananda<br />Somasundara<br />Auditorium
-          </p>
-          <p className="info-section__secondary">SUSL</p>
-        </section>
+        {/* Venue card */}
+        <div className="info-card reveal" data-delay="4">
+          <div className="info-card__divider" />
+          <section className="info-section" id="venue-section">
+            <span className="info-section__label">Venue</span>
+            <p className="info-section__primary info-section__primary--gold">
+              Dayananda<br />Somasundara<br />Auditorium
+            </p>
+            <p className="info-section__secondary">SUSL</p>
+          </section>
+          <div className="info-card__divider" />
+        </div>
       </div>
     </>
   )
