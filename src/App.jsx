@@ -93,16 +93,16 @@ function App() {
     })
   }, [])
 
-  if (!imagesLoaded) {
-    return (
-      <div className="loader">
-        <div className="loader__spinner"></div>
-      </div>
-    )
-  }
-
   return (
     <>
+      {/* Loader overlay — fades out when images decoded */}
+      <div className={`loader ${imagesLoaded ? 'loader--hidden' : ''}`}>
+        <div className="loader__spinner"></div>
+      </div>
+
+      {/* Hero section — rendered behind loader, fades in */}
+      <div className={`app-content ${imagesLoaded ? 'app-content--visible' : ''}`}>
+
       {/* Hero section — unchanged layout */}
       <div className="invitation" id="invitation-page">
         <div className="invitation__portal">
@@ -232,6 +232,7 @@ function App() {
         <footer className="details__footer reveal" data-delay="5">
           <img src={facOfComputingLogo} alt="Faculty of Computing" className="details__footer-logo" />
         </footer>
+      </div>
       </div>
     </>
   )

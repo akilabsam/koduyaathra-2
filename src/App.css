@@ -527,9 +527,7 @@
   }
 }
 
-/* =============================================
-   LOADER
-   ============================================= */
+/* Loader overlay — fades out when images ready */
 .loader {
   position: fixed;
   inset: 0;
@@ -538,6 +536,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+  pointer-events: all;
+}
+
+.loader--hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .loader__spinner {
@@ -551,4 +557,14 @@
 
 @keyframes loaderSpin {
   to { transform: rotate(360deg); }
+}
+
+/* App content — hidden until images decoded */
+.app-content {
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+.app-content--visible {
+  opacity: 1;
 }
