@@ -1,11 +1,11 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
 import './App.css'
 
-import bgImage from '../assets/bg.webp'
-import portalImage from '../assets/portal-new.webp'
-import sinhalaTitle from '../assets/kodu-yathra-sinhala.webp'
-import logo from '../assets/kodu-yathra-logo-clean.webp'
-import facOfComputingLogo from '../assets/faculty-of-computing.webp'
+const bgImage = '/bg.webp'
+const portalImage = '/portal-new.webp'
+const sinhalaTitle = '/kodu-yathra-sinhala.webp'
+const logo = '/kodu-yathra-logo-clean.webp'
+const facOfComputingLogo = '/faculty-of-computing.webp'
 
 // Event target date: September 10, 2026 at 6:00 PM IST
 const EVENT_DATE = new Date('2026-09-10T18:00:00+05:30')
@@ -76,7 +76,7 @@ function App() {
 
   // Preload critical images
   useEffect(() => {
-    const imagesToLoad = [bgImage, portalImage, sinhalaTitle, logo, facOfComputingLogo]
+    const imagesToLoad = [bgImage, portalImage, sinhalaTitle, logo]
     let loadedCount = 0
 
     imagesToLoad.forEach((src) => {
