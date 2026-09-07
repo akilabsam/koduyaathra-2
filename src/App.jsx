@@ -34,10 +34,11 @@ function getTimeLeft() {
 }
 
 // Scroll-reveal hook using IntersectionObserver
-function useScrollReveal() {
+function useScrollReveal(isReady = true) {
   const ref = useRef(null)
 
   useEffect(() => {
+    if (!isReady) return;
     const container = ref.current
     if (!container) return
 
@@ -56,7 +57,7 @@ function useScrollReveal() {
     elements.forEach((el) => observer.observe(el))
 
     return () => observer.disconnect()
-  }, [])
+  }, [isReady])
 
   return ref
 }
@@ -64,7 +65,8 @@ function useScrollReveal() {
 function App() {
   const particles = useMemo(() => generateParticles(20), [])
   const [time, setTime] = useState(getTimeLeft)
-  const detailsRef = useScrollReveal()
+  const [imagesLoaded, setImagesLoaded] = useState(false)
+  const detailsRef = useScrollReveal(imagesLoaded)
 
   // Update countdown every second
   useEffect(() => {
@@ -72,7 +74,32 @@ function App() {
     return () => clearInterval(id)
   }, [])
 
+  // Preload critical images
+  useEffect(() => {
+    const imagesToLoad = [bgImage, portalImage, sinhalaTitle, logo, facOfComputingLogo]
+    let loadedCount = 0
 
+    imagesToLoad.forEach((src) => {
+      const img = new Image()
+      img.onload = () => {
+        loadedCount++
+        if (loadedCount === imagesToLoad.length) setImagesLoaded(true)
+      }
+      img.onerror = () => {
+        loadedCount++
+        if (loadedCount === imagesToLoad.length) setImagesLoaded(true)
+      }
+      img.src = src
+    })
+  }, [])
+
+  if (!imagesLoaded) {
+    return (
+      <div className="loader">
+        <div className="loader__spinner"></div>
+      </div>
+    )
+  }
 
   return (
     <>
