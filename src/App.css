@@ -265,7 +265,7 @@
 @keyframes floatUp {
   0% {
     opacity: 0;
-    transform: translateY(100vh) translateX(0);
+    transform: translateY(100dvh) translateX(0);
   }
   10% {
     opacity: 1;
@@ -275,7 +275,7 @@
   }
   100% {
     opacity: 0;
-    transform: translateY(-10vh) translateX(var(--drift));
+    transform: translateY(-10dvh) translateX(var(--drift));
   }
 }
 

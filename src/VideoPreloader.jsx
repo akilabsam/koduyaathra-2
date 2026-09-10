@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react'
 
 // Scroll height multiplier — controls how much scrolling maps to video duration
-const SCROLL_PAGES = 5
+const SCROLL_PAGES = 2
 
 function VideoPreloader({ active, onExit }) {
   const videoRef = useRef(null)
@@ -62,7 +62,7 @@ function VideoPreloader({ active, onExit }) {
     // Create scroll spacer
     const spacer = document.createElement('div')
     spacer.id = 'video-preloader-spacer'
-    spacer.style.height = `${SCROLL_PAGES * 100}vh`
+    spacer.style.height = `${SCROLL_PAGES * 100}svh`
     spacer.style.position = 'relative'
     spacer.style.zIndex = '-1'
     document.body.insertBefore(spacer, document.body.firstChild)
