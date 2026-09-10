@@ -1,5 +1,7 @@
-import { useMemo, useState, useEffect, useRef } from 'react'
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import './App.css'
+import VideoPreloader from './VideoPreloader'
+import './VideoPreloader.css'
 
 const bgImage = '/bg.webp'
 const portalImage = '/portal-new.webp'
@@ -66,7 +68,79 @@ function App() {
   const particles = useMemo(() => generateParticles(20), [])
   const [time, setTime] = useState(getTimeLeft)
   const [imagesLoaded, setImagesLoaded] = useState(false)
-  const detailsRef = useScrollReveal(imagesLoaded)
+  const [preloaderActive, setPreloaderActive] = useState(true)
+  const [preloaderEverDone, setPreloaderEverDone] = useState(false)
+  const siteReady = imagesLoaded && preloaderEverDone
+  const detailsRef = useScrollReveal(siteReady)
+  const [dimOpacity, setDimOpacity] = useState(0)
+
+  // Handle preloader exit
+  const handlePreloaderExit = useCallback(() => {
+    setPreloaderActive(false)
+    setPreloaderEverDone(true)
+  }, [])
+
+  // Track scroll to dim the hero section (only after preloader done)
+  const handleScroll = useCallback(() => {
+    if (preloaderActive) return
+    const scrollY = window.scrollY
+    const windowH = window.innerHeight
+    const opacity = Math.min(scrollY / (windowH * 0.6), 0.6)
+    setDimOpacity(opacity)
+  }, [preloaderActive])
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [handleScroll])
+
+  // Reset dim overlay when preloader re-enters
+  useEffect(() => {
+    if (preloaderActive) setDimOpacity(0)
+  }, [preloaderActive])
+
+  // Re-enter preloader on scroll-up at top (desktop)
+  useEffect(() => {
+    if (preloaderActive) return
+
+    const handleWheel = (e) => {
+      if (window.scrollY < 1 && e.deltaY < 0) {
+        e.preventDefault()
+        setPreloaderActive(true)
+      }
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    return () => window.removeEventListener('wheel', handleWheel)
+  }, [preloaderActive])
+
+  // Re-enter preloader on pull-down at top (mobile)
+  useEffect(() => {
+    if (preloaderActive) return
+
+    let touchStartY = 0
+
+    const handleTouchStart = (e) => {
+      touchStartY = e.touches[0].clientY
+    }
+
+    const handleTouchMove = (e) => {
+      if (window.scrollY < 1) {
+        const deltaY = e.touches[0].clientY - touchStartY
+        if (deltaY > 50) {
+          e.preventDefault()
+          setPreloaderActive(true)
+        }
+      }
+    }
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true })
+    window.addEventListener('touchmove', handleTouchMove, { passive: false })
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart)
+      window.removeEventListener('touchmove', handleTouchMove)
+    }
+  }, [preloaderActive])
 
   // Update countdown every second
   useEffect(() => {
@@ -93,15 +167,20 @@ function App() {
     })
   }, [])
 
-  return (
+    return (
     <>
-      {/* Loader overlay — fades out when images decoded */}
-      <div className={`loader ${imagesLoaded ? 'loader--hidden' : ''}`}>
-        <div className="loader__spinner"></div>
-      </div>
+      {/* Scroll-driven video preloader — always mounted for re-entry */}
+      <VideoPreloader active={preloaderActive} onExit={handlePreloaderExit} />
 
-      {/* Hero section — rendered behind loader, fades in */}
-      <div className={`app-content ${imagesLoaded ? 'app-content--visible' : ''}`}>
+      {/* Spinner fallback while images still loading after preloader */}
+      {preloaderEverDone && !imagesLoaded && (
+        <div className="loader">
+          <div className="loader__spinner"></div>
+        </div>
+      )}
+
+      {/* Main site — revealed after preloader + images ready */}
+      <div className={`app-content ${siteReady ? 'app-content--visible' : ''}`}>
 
       {/* Hero section — unchanged layout */}
       <div className="invitation" id="invitation-page">
@@ -142,18 +221,19 @@ function App() {
           />
         </header>
 
-
-
         <footer className="invitation__bottom" id="footer-section">
           <img
             className="invitation__logo"
             src={logo}
             alt="Kodu Yathra Logo"
           />
-         
         </footer>
 
-
+        {/* Scroll-driven dimming overlay */}
+        <div
+          className="invitation__dim"
+          style={{ opacity: dimOpacity }}
+        />
       </div>
 
       {/* Details sections — revealed on scroll */}
