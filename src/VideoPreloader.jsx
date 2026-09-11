@@ -52,7 +52,14 @@ function VideoPreloader({ active, onExit }) {
 
   // Manage scroll spacer and position
   useEffect(() => {
-    if (!active) return
+    if (!active) {
+      document.body.style.overflow = ''
+      return
+    }
+
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual"
+    window.scrollTo(0, 0)
+    document.body.style.overflow = 'hidden'
 
     // On re-entry, set video to end frame immediately
     if (!isFirstRunRef.current && videoRef.current && videoRef.current.duration) {
@@ -83,6 +90,7 @@ function VideoPreloader({ active, onExit }) {
       const el = document.getElementById('video-preloader-spacer')
       if (el) el.remove()
       window.scrollTo(0, 0)
+      document.body.style.overflow = ''
     }
   }, [active])
 
