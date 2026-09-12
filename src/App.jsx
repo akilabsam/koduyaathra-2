@@ -78,6 +78,7 @@ function App() {
   const handlePreloaderExit = useCallback(() => {
     setPreloaderActive(false)
     setPreloaderEverDone(true)
+    setExitTime(Date.now())
   }, [])
 
   // Track scroll to dim the hero section (only after preloader done)
