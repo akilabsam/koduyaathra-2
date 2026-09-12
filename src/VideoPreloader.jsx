@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from 'react'
 
 // Scroll height multiplier — controls how much scrolling maps to video duration
 const SCROLL_PAGES = 2
-const FRAME_COUNT = 240
+const FRAME_COUNT = 500
 
 function VideoPreloader({ active, onExit }) {
   const canvasRef = useRef(null)
