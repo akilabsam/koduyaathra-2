@@ -2,14 +2,49 @@ import { useEffect, useRef, useCallback } from 'react'
 
 // Scroll height multiplier — controls how much scrolling maps to video duration
 const SCROLL_PAGES = 2
+const FRAME_COUNT = 240
 
 function VideoPreloader({ active, onExit }) {
-  const videoRef = useRef(null)
+  const canvasRef = useRef(null)
   const containerRef = useRef(null)
   const rafRef = useRef(null)
   const isFirstRunRef = useRef(true)
   const hasExitedRef = useRef(false)
   const hasScrolledAwayRef = useRef(false)
+  const imagesRef = useRef([])
+
+  // Preload images once
+  useEffect(() => {
+    for (let i = 1; i <= FRAME_COUNT; i++) {
+      const img = new Image()
+      // Use requestIdleCallback or just let browser handle it to not block main thread heavily
+      const num = i.toString().padStart(3, '0')
+      img.src = `/frames/${num}.jpg`
+      imagesRef.current.push(img)
+    }
+  }, [])
+
+  const drawFrame = useCallback((index) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const img = imagesRef.current[index]
+    
+    if (img && img.complete && img.naturalWidth > 0) {
+      if (canvas.width !== img.naturalWidth) {
+        canvas.width = img.naturalWidth
+        canvas.height = img.naturalHeight
+      }
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+    } else if (img) {
+      // If not loaded yet, draw it when it loads
+      img.onload = () => {
+        // Only draw if we haven't scrolled past this frame index significantly, 
+        // but for safety just draw it.
+        drawFrame(index)
+      }
+    }
+  }, [])
 
   // Reset guards when re-activated
   useEffect(() => {
@@ -19,23 +54,25 @@ function VideoPreloader({ active, onExit }) {
     }
   }, [active])
 
-  // Seek video based on scroll position
+  // Draw frame based on scroll position
   const handleScroll = useCallback(() => {
     if (!active || hasExitedRef.current) return
 
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
 
     rafRef.current = requestAnimationFrame(() => {
-      const video = videoRef.current
-      if (!video || !video.duration) return
-
       const scrollY = window.scrollY
       // Total scrollable distance = (SCROLL_PAGES - 1) viewports
       const maxScroll = window.innerHeight * (SCROLL_PAGES - 1)
       const progress = Math.min(scrollY / maxScroll, 1)
 
-      // Map scroll progress to video time
-      video.currentTime = progress * video.duration
+      // Map scroll progress to frame index
+      const frameIndex = Math.min(
+        FRAME_COUNT - 1, 
+        Math.floor(progress * FRAME_COUNT)
+      )
+      
+      drawFrame(frameIndex)
 
       // Track when user has scrolled away from end (prevents instant re-exit)
       if (progress < 0.95) {
@@ -48,7 +85,7 @@ function VideoPreloader({ active, onExit }) {
         setTimeout(() => onExit?.(), 200)
       }
     })
-  }, [active, onExit])
+  }, [active, onExit, drawFrame])
 
   // Manage scroll spacer and position
   useEffect(() => {
@@ -61,9 +98,11 @@ function VideoPreloader({ active, onExit }) {
     window.scrollTo(0, 0)
     document.body.style.overflow = 'hidden'
 
-    // On re-entry, set video to end frame immediately
-    if (!isFirstRunRef.current && videoRef.current && videoRef.current.duration) {
-      videoRef.current.currentTime = videoRef.current.duration
+    // On re-entry, draw end frame immediately
+    if (!isFirstRunRef.current) {
+      drawFrame(FRAME_COUNT - 1)
+    } else {
+      drawFrame(0)
     }
 
     // Create scroll spacer
@@ -92,7 +131,7 @@ function VideoPreloader({ active, onExit }) {
       window.scrollTo(0, 0)
       document.body.style.overflow = ''
     }
-  }, [active])
+  }, [active, drawFrame])
 
   // Attach scroll listener
   useEffect(() => {
@@ -109,13 +148,9 @@ function VideoPreloader({ active, onExit }) {
       ref={containerRef}
       className={`video-preloader ${!active ? 'video-preloader--done' : ''}`}
     >
-      <video
-        ref={videoRef}
+      <canvas
+        ref={canvasRef}
         className="video-preloader__video"
-        src="/preloading_scroll.mp4"
-        muted
-        playsInline
-        preload="auto"
       />
       {/* Scroll hint indicator */}
       {active && (
