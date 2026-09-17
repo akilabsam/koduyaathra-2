@@ -13,79 +13,116 @@ function VideoPreloader({ active, onExit }) {
   const hasScrolledAwayRef = useRef(false)
   const imagesRef = useRef([])
 
-  // Preload images once
+  // FIX 1: Cache canvas 2D context — never call getContext on every draw
+  const ctxRef = useRef(null)
+
+  // FIX 2: Track last rendered frame index — skip draw if unchanged
+  const lastFrameIndexRef = useRef(-1)
+
+  // FIX 5: Store stable drawFrame in a ref so scroll handler never needs it as a dep
+  const drawFrameRef = useRef(null)
+
+  // Preload images once — FIX 3: set onload handlers HERE, not inside drawFrame
   useEffect(() => {
     for (let i = 1; i <= FRAME_COUNT; i++) {
       const img = new Image()
-      // Use requestIdleCallback or just let browser handle it to not block main thread heavily
       const num = i.toString().padStart(3, '0')
+      const index = i - 1
+
+      // FIX 3: onload is set once at load time, not recursively inside drawFrame
+      img.onload = () => {
+        // Only draw this frame if it's the one currently expected
+        if (lastFrameIndexRef.current === index) {
+          drawFrameRef.current?.(index)
+        }
+      }
+
       img.src = `/frames/${num}.jpg`
       imagesRef.current.push(img)
     }
   }, [])
 
+  // FIX 1 + FIX 2: drawFrame caches ctx and skips same-frame redraws
   const drawFrame = useCallback((index) => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d')
+
+    // FIX 1: Cache context once, reuse forever
+    if (!ctxRef.current) {
+      ctxRef.current = canvas.getContext('2d')
+    }
+
     const img = imagesRef.current[index]
-    
+
+    // FIX 2: Skip draw if this frame is already displayed
+    if (lastFrameIndexRef.current === index && img?.complete) return
+    lastFrameIndexRef.current = index
+
     if (img && img.complete && img.naturalWidth > 0) {
       if (canvas.width !== img.naturalWidth) {
         canvas.width = img.naturalWidth
         canvas.height = img.naturalHeight
+        // Re-acquire context after canvas resize (resize resets ctx state)
+        ctxRef.current = canvas.getContext('2d')
       }
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-    } else if (img) {
-      // If not loaded yet, draw it when it loads
-      img.onload = () => {
-        // Only draw if we haven't scrolled past this frame index significantly, 
-        // but for safety just draw it.
-        drawFrame(index)
-      }
+      ctxRef.current.drawImage(img, 0, 0, canvas.width, canvas.height)
     }
+    // If not loaded yet, the onload handler (set during preload) will draw it
   }, [])
+
+  // FIX 5: Always keep drawFrameRef in sync with the latest drawFrame
+  useEffect(() => {
+    drawFrameRef.current = drawFrame
+  }, [drawFrame])
 
   // Reset guards when re-activated
   useEffect(() => {
     if (active) {
       hasExitedRef.current = false
       hasScrolledAwayRef.current = false
+      lastFrameIndexRef.current = -1
     }
   }, [active])
 
-  // Draw frame based on scroll position
+  // FIX 5: handleScroll uses refs only — no drawFrame/onExit in dep array
+  // This means the scroll listener is NEVER re-registered during transitions
+  const onExitRef = useRef(onExit)
+  useEffect(() => { onExitRef.current = onExit }, [onExit])
+  const activeRef = useRef(active)
+  useEffect(() => { activeRef.current = active }, [active])
+
   const handleScroll = useCallback(() => {
-    if (!active || hasExitedRef.current) return
+    if (!activeRef.current || hasExitedRef.current) return
 
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
 
     rafRef.current = requestAnimationFrame(() => {
       const scrollY = window.scrollY
-      // Total scrollable distance = (SCROLL_PAGES - 1) viewports
       const maxScroll = window.innerHeight * (SCROLL_PAGES - 1)
       const progress = Math.min(scrollY / maxScroll, 1)
 
-      // Map scroll progress to frame index
       const frameIndex = Math.min(
-        FRAME_COUNT - 1, 
+        FRAME_COUNT - 1,
         Math.floor(progress * FRAME_COUNT)
       )
-      
-      drawFrame(frameIndex)
 
-      // Track when user has scrolled away from end (prevents instant re-exit)
+      // Use ref-stable draw call
+      drawFrameRef.current?.(frameIndex)
+
       if (progress < 0.95) {
         hasScrolledAwayRef.current = true
       }
 
-      // Only exit after user has scrolled away from initial position first
+      // FIX 4: Exit via rAF instead of setTimeout — avoids React reconciler
+      // collision with active scroll + CSS transition happening simultaneously
       if (progress >= 0.99 && hasScrolledAwayRef.current) {
         hasExitedRef.current = true
-        setTimeout(() => onExit?.(), 200)
+        requestAnimationFrame(() => {
+          onExitRef.current?.()
+        })
       }
     })
-  }, [active, onExit, drawFrame])
+  }, []) // Empty deps — all values read through stable refs
 
   // Manage scroll spacer and position
   useEffect(() => {
@@ -94,18 +131,16 @@ function VideoPreloader({ active, onExit }) {
       return
     }
 
-    if ("scrollRestoration" in history) history.scrollRestoration = "manual"
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
     window.scrollTo(0, 0)
     document.body.style.overflow = 'hidden'
 
-    // On re-entry, draw end frame immediately
     if (!isFirstRunRef.current) {
       drawFrame(FRAME_COUNT - 1)
     } else {
       drawFrame(0)
     }
 
-    // Create scroll spacer
     const spacer = document.createElement('div')
     spacer.id = 'video-preloader-spacer'
     spacer.style.height = `${SCROLL_PAGES * 100}svh`
@@ -113,13 +148,11 @@ function VideoPreloader({ active, onExit }) {
     spacer.style.zIndex = '-1'
     document.body.insertBefore(spacer, document.body.firstChild)
 
-    // Set scroll position after spacer is in DOM
     requestAnimationFrame(() => {
       if (isFirstRunRef.current) {
         window.scrollTo(0, 0)
         isFirstRunRef.current = false
       } else {
-        // Re-entry: scroll to bottom so video starts at end
         const maxScroll = window.innerHeight * (SCROLL_PAGES - 1)
         window.scrollTo(0, maxScroll)
       }
@@ -133,7 +166,8 @@ function VideoPreloader({ active, onExit }) {
     }
   }, [active, drawFrame])
 
-  // Attach scroll listener
+  // Attach scroll listener — FIX 5: handleScroll is now stable (empty deps),
+  // so this effect NEVER re-fires during transitions — no listener gap
   useEffect(() => {
     if (!active) return
     window.addEventListener('scroll', handleScroll, { passive: true })
@@ -152,7 +186,6 @@ function VideoPreloader({ active, onExit }) {
         ref={canvasRef}
         className="video-preloader__video"
       />
-      {/* Scroll hint indicator */}
       {active && (
         <div className="video-preloader__hint">
           <img src="/kodu-yathra-logo-clean.webp" alt="Kodu Yaathra" className="video-preloader__logo" />
