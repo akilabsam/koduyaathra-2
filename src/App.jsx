@@ -215,11 +215,11 @@ function App() {
         <header className="invitation__top" id="header-section">
           <p className="invitation__subtitle">We Cordially</p>
           <h1 className="invitation__title">Invite You To</h1>
-          <img
+          {/* <img
             className="invitation__sinhala"
             src={sinhalaTitle}
             alt="කොඩුයාත්‍රා"
-          />
+          /> */}
         </header>
 
         <footer className="invitation__bottom" id="footer-section">
