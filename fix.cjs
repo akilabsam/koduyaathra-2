@@ -1,5 +1,5 @@
 const fs = require('fs');
-
+//
 let content = fs.readFileSync('src/App.css', 'utf8');
 
 const rootBlock = `:root {
