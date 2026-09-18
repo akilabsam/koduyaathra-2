@@ -19,7 +19,7 @@ function VideoPreloader({ active, onExit }) {
       const img = new Image()
       // Use requestIdleCallback or just let browser handle it to not block main thread heavily
       const num = i.toString().padStart(3, '0')
-      img.src = `/frames/${num}.jpg`
+      img.src = `/frames/${num}.webp`
       imagesRef.current.push(img)
     }
   }, [])

@@ -9,8 +9,8 @@ const sinhalaTitle = '/kodu-yathra-sinhala.webp'
 const logo = '/kodu-yathra-logo-clean.webp'
 const facOfComputingLogo = '/faculty-of-computing.webp'
 
-// Event target date: September 10, 2026 at 6:00 PM IST
-const EVENT_DATE = new Date('2026-09-10T18:00:00+05:30')
+// Event target date: September 22, 2026 at 6:00 PM IST
+const EVENT_DATE = new Date('2026-09-22T18:00:00+05:30')
 
 // Generates randomized floating particle data
 function generateParticles(count) {
@@ -220,14 +220,15 @@ function App() {
             src={sinhalaTitle}
             alt="කොඩුයාත්‍රා"
           /> */}
-        </header>
-
-        <footer className="invitation__bottom" id="footer-section">
           <img
             className="invitation__logo"
             src={logo}
             alt="Kodu Yathra Logo"
           />
+        </header>
+
+        <footer className="invitation__bottom" id="footer-section">
+          
         </footer>
 
         {/* Scroll-driven dimming overlay */}
@@ -274,10 +275,10 @@ function App() {
           <section className="info-section" id="date-section">
             <span className="info-section__label">Date</span>
             <p className="info-section__primary">
-              <span className="info-section__primary--gold">10<sup>th</sup></span>{' '}
+              <span className="info-section__primary--gold">22<sup>nd</sup></span>
               <span className="info-section__primary--white">of September</span>
             </p>
-            <p className="info-section__secondary">Thursday</p>
+            <p className="info-section__secondary">Tuesday</p>
           </section>
           <div className="info-card__divider" />
         </div>
@@ -302,7 +303,7 @@ function App() {
           <section className="info-section" id="venue-section">
             <span className="info-section__label">Venue</span>
             <p className="info-section__primary info-section__primary--gold">
-              Dayananda<br />Somasundara<br />Auditorium
+              Prof.<br />J.W. Dayananda Somasundara<br />Auditorium
             </p>
             <p className="info-section__secondary">SUSL</p>
           </section>
