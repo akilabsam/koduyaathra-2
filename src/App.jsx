@@ -272,6 +272,7 @@ function App() {
         {/* Event Details Card */}
         <div className="info-card reveal" data-delay="2">
           <img src="/mask.jpg" alt="" className="info-card__mask" />
+           <img src="/brush.jpg" alt="" className="info-card__mask" />
           <section className="info-section" id="date-section">
             <span className="info-section__label">Date</span>
             <p className="info-section__primary">
@@ -297,17 +298,20 @@ function App() {
           <section className="info-section" id="venue-section">
             <span className="info-section__label">Venue</span>
             <p className="info-section__primary info-section__primary--gold">
-              Prof.<br />J.W. Dayananda Somasundara<br />Auditorium
+              Prof.<br />J.W. Dayananda Somasundara<br /><p className="info-section__primary--white">Auditorium</p>
             </p>
             <p className="info-section__secondary">SUSL</p>
           </section>
-          <img src="/guitar.png" alt="" className="info-card__music" />
+          <img src="/guitarist.png" alt="" className="info-card__music" />
         </div>
 
         {/* Faculty of Computing footer */}
         <footer className="details__footer reveal" data-delay="5">
           <img src={facOfComputingLogo} alt="Faculty of Computing" className="details__footer-logo" />
         </footer>
+
+        {/* Decorative dancer image */}
+        <img src="/dancer.png" alt="" className="details__dancer" />
       </div>
       </div>
     </>

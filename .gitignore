@@ -24,10 +24,10 @@ dist-ssr
 *.sw?
 # Design and original image assets
 *.psd
-*.png
-*.jpg
-*.jpeg
-!public/frames/*.jpg
+
+
+
+
 
 # Conversion scripts
 convert.js
