@@ -156,7 +156,17 @@ function VideoPreloader({ active, onExit }) {
         ref={canvasRef}
         className="video-preloader__video"
       />
-      {/* Scroll hint indicator */}
+      {/* Top scroll hint indicator */}
+      {active && (
+        <div className="video-preloader__top-hint">
+          <svg className="video-preloader__arrow" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+            <polyline points="18 21 12 15 6 21"></polyline>
+          </svg>
+        </div>
+      )}
+
+      {/* Scroll hint indicator at bottom */}
       {active && (
         <div className="video-preloader__hint">
           <img src="/kodu-yathra-logo-clean.webp" alt="Kodu Yaathra" className="video-preloader__logo" />

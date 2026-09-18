@@ -35,7 +35,7 @@
 }
 
 .video-preloader__logo {
-  width: 180px;
+  width: 200px;
   height: auto;
   opacity: 0.8;
 }
@@ -55,5 +55,34 @@
 
   .video-preloader--done {
     transform: translateX(-50%);
+  }
+}
+
+/* Top scroll hint */
+.video-preloader__top-hint {
+  position: absolute;
+  top: clamp(2rem, 5vh, 4rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+.video-preloader__arrow {
+  animation: bounceUpArrow 2s infinite;
+  opacity: 0.8;
+}
+
+@keyframes bounceUpArrow {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
   }
 }

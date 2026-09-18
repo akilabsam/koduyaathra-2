@@ -269,9 +269,9 @@ function App() {
           </div>
         </div>
 
-        {/* Date card */}
+        {/* Event Details Card */}
         <div className="info-card reveal" data-delay="2">
-          <div className="info-card__divider" />
+          <img src="/mask.jpg" alt="" className="info-card__mask" />
           <section className="info-section" id="date-section">
             <span className="info-section__label">Date</span>
             <p className="info-section__primary">
@@ -280,12 +280,9 @@ function App() {
             </p>
             <p className="info-section__secondary">Tuesday</p>
           </section>
-          <div className="info-card__divider" />
-        </div>
 
-        {/* Time card */}
-        <div className="info-card reveal" data-delay="3">
           <div className="info-card__divider" />
+
           <section className="info-section" id="time-section">
             <span className="info-section__label">Time</span>
             <p className="info-section__primary">
@@ -294,12 +291,9 @@ function App() {
             </p>
             <p className="info-section__secondary">Doors Open At 5:30</p>
           </section>
-          <div className="info-card__divider" />
-        </div>
 
-        {/* Venue card */}
-        <div className="info-card reveal" data-delay="4">
           <div className="info-card__divider" />
+
           <section className="info-section" id="venue-section">
             <span className="info-section__label">Venue</span>
             <p className="info-section__primary info-section__primary--gold">
@@ -307,7 +301,7 @@ function App() {
             </p>
             <p className="info-section__secondary">SUSL</p>
           </section>
-          <div className="info-card__divider" />
+          <img src="/music.jpg" alt="" className="info-card__music" />
         </div>
 
         {/* Faculty of Computing footer */}
