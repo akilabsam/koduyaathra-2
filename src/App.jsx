@@ -301,7 +301,7 @@ function App() {
             </p>
             <p className="info-section__secondary">SUSL</p>
           </section>
-          <img src="/music.jpg" alt="" className="info-card__music" />
+          <img src="/guitar.png" alt="" className="info-card__music" />
         </div>
 
         {/* Faculty of Computing footer */}
